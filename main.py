@@ -1,9 +1,10 @@
 from args import parser_arguments
+from services.onepagebuilder import OnePageBuilder
 
 def main():
-    parser = parser_arguments()
-    args = parser.parse_args()
-    print(args)
+    args = parser_arguments()
+    onepagebuilder = OnePageBuilder('openai')
+    onepagebuilder.build(args)
 
 if __name__ == "__main__":
     main()
