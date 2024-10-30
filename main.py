@@ -16,10 +16,11 @@ def main():
     args = parser_arguments()
 
     configuration = Configuration(console)
+    configuration.verify_api_key_openai()
+
     chatgpt = ChatGPT(console, model=args.model)
     onepagebuilder = OnePageBuilder(console, chatgpt)
 
-    configuration.verify_api_key_openai()
     onepagebuilder.build(args)
 
 if __name__ == "__main__":

@@ -43,7 +43,7 @@ MODELS_PRICING = {
         "input": 0.0003,
         "output": 0.0012,
     },
-    "gpt-3.5-turbo": {
+    "gpt-4o-mini": {
         "input": 0.003,
         "output": 0.006,
     },

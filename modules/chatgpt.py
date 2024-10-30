@@ -6,7 +6,7 @@ from config.models_pricing import MODELS_PRICING
 
 class ChatGPT:
 
-    def __init__(self, console, model="gpt-3.5-turbo", max_tokens=2200):
+    def __init__(self, console, model="gpt-4o-mini", max_tokens=2200):
         self.console = console
         self.model = model
         self.openai = OpenAI()
@@ -25,6 +25,7 @@ class ChatGPT:
             response = self.openai.chat.completions.create(
                 model=self.model,
                 max_tokens=self.max_tokens,
+                temperature=0.2,
                 messages=[
                     {
                         "role": "user",

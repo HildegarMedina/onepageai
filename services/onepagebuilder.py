@@ -11,21 +11,24 @@ class OnePageBuilder:
     def prepare_prompt(self, args):
         description = args.description if args.description else ''
         location = args.location if args.location else ''
-        colors = args.colors if args.colors else ''
         name = args.name if args.name else ''
         lang = args.language if args.language else 'English'
 
         prompt = CREATE_ONE_PAGE
-        prompt = prompt.replace('{technologies}', args.technologies.replace(',', ', '))
         prompt = prompt.replace('{description}', description)
         if location:
             prompt = prompt.replace('{location}', f"ubicada en {location}.")
         prompt = prompt.replace('{location}', '')
-        if colors:
-            colors = colors.replace(',', ', ')
-            prompt = prompt.replace('{colors}', f"Usa los colores {colors} en el diseño.")
-        prompt = prompt.replace('{company_name}', f"Mi empresa se llama {name}")
-        prompt = prompt.replace('{lang}', f" en {lang}")
+
+        if args.primary_color:
+            prompt = prompt.replace('{primary_color}', args.primary_color)
+        if args.secondary_color:
+            prompt = prompt.replace('{secondary_color}', args.secondary_color)
+        if args.background_color:
+            prompt = prompt.replace('{background_color}', args.background_color)
+
+        prompt = prompt.replace('{company_name}', f"Mi empresa que se llama {name}")
+        prompt = prompt.replace('{lang}', lang)
         prompt = prompt.replace('{sections}', args.sections.replace(',', ', '))
 
         return prompt
@@ -37,6 +40,7 @@ class OnePageBuilder:
 
     def build(self, args):
         prompt = self.prepare_prompt(args)
+
         cost = self.module_ai.calculate_cost(prompt)
 
         response = ''
