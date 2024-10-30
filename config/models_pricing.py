@@ -47,6 +47,10 @@ MODELS_PRICING = {
         "input": 0.003,
         "output": 0.006,
     },
+    "gpt-3.5-turbo": {
+        "input": 0.003,
+        "output": 0.006,  
+    },
     "davinci-002": {
         "input": 0.012,
         "output": 0.012,

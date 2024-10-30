@@ -36,20 +36,44 @@ class OnePageBuilder:
     def save_one_page(self, content, path='onepage.html'):
         with open(path, 'w') as file:
             file.write(content)
-        self.console.print(f"\n[{COLOR_SUCCESS}]One page saved in {path}[/{COLOR_SUCCESS}]\n")
+        self.console.print(f"\n[{COLOR_SUCCESS}]One page saved in {path}[/{COLOR_SUCCESS}]")
 
     def build(self, args):
         prompt = self.prepare_prompt(args)
 
-        cost = self.module_ai.calculate_cost(prompt)
+        messages = [
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ]
+        html = self.module_ai.completion(messages, prompt)
+        clean_html = re.sub(r'```html(.*?)```', r'\1', html, flags=re.DOTALL)
+        self.save_one_page(clean_html, args.path)
 
         response = ''
         while response not in ['y', 'yes', 'n', 'no']:
-            self.console.print(f"\n[{COLOR_WARNING}]The cost of this request is {cost}.\n[/{COLOR_WARNING}]") 
-            response = input('Do you want to continue? (y/n): ').lower()
-            if response in ['n', 'no']:
+            response = input('\nWould you like to change something? (y/n): ').lower()
+            if response in ['y', 'yes']:
+                prompt_change = input('\nWhat would you like to change?: ')
+                messages_change = messages + [
+                    {
+                        "role": "assistant",
+                        "content": html
+                    },
+                    {
+                        "role": "system",
+                        "content": "Debes cambiar el contenido html para ajustar las demandas, no respondas ni expliques, solo haz los cambios y retorna el html."
+                    },
+                    {
+                        "role": "user",
+                        "content": prompt_change
+                    }
+                ]
+                html = self.module_ai.completion(messages_change, prompt_change)
+                clean_html = re.sub(r'```html(.*?)```', r'\1', html, flags=re.DOTALL)
+                self.save_one_page(clean_html, args.path)
+                response = ''
+            elif response in ['n', 'no']:
                 sys.exit(1)
 
-        html = self.module_ai.completion(prompt)
-        html = re.sub(r'```html(.*?)```', r'\1', html, flags=re.DOTALL)
-        self.save_one_page(html, args.path)

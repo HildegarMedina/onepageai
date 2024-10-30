@@ -1,12 +1,12 @@
 import sys
 import tiktoken
 from openai import OpenAI
-from config.config import COLOR_DANGER
+from config.config import COLOR_DANGER, COLOR_WARNING
 from config.models_pricing import MODELS_PRICING
 
 class ChatGPT:
 
-    def __init__(self, console, model="gpt-4o-mini", max_tokens=2200):
+    def __init__(self, console, model="gpt-4o-mini", max_tokens=3000):
         self.console = console
         self.model = model
         self.openai = OpenAI()
@@ -20,18 +20,23 @@ class ChatGPT:
         output_price = (response_length * MODELS_PRICING[self.model]['output']) / 1000
         return input_price + output_price
 
-    def completion(self, prompt):
+    def completion(self, messages, prompt):
         try:
+            cost = self.calculate_cost(prompt)
+
+            response = ''
+            while response not in ['y', 'yes', 'n', 'no']:
+                cost = round(cost, 2)
+                self.console.print(f"\n[{COLOR_WARNING}]The cost of this request is USD {cost}.\n[/{COLOR_WARNING}]") 
+                response = input('Do you want to continue? (y/n): ').lower()
+                if response in ['n', 'no']:
+                    sys.exit(1)
+
             response = self.openai.chat.completions.create(
                 model=self.model,
                 max_tokens=self.max_tokens,
-                temperature=0.2,
-                messages=[
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ]
+                temperature=0.7,
+                messages=messages
             )
             message =  response.choices[0].message.content
             return message
