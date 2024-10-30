@@ -1,0 +1,3 @@
+DANGER='#e74c3c'
+WARNING='#e67e22'
+SUCCESS='#2ecc71'
